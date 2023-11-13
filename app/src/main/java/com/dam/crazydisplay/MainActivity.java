@@ -36,7 +36,9 @@ public class MainActivity extends AppCompatActivity {
         botonEnviar.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-
+                String msg = mensaje.getText().toString();
+                sendMessage(msg);
+                Log.println(Log.INFO, "Mensaje", msg);
             }
         });
         botonConectar.setOnClickListener(new View.OnClickListener() {
@@ -60,19 +62,18 @@ public class MainActivity extends AppCompatActivity {
             @Override
             public void onOpen(ServerHandshake serverHandshake) {
                 // Connection opened
-                System.out.println("OnOpen");
+                sendMessage("~AndroidClient");
             }
 
             @Override
             public void onMessage(String s) {
-                System.out.println("OnMessage");
-                // Message received
+                System.out.println("Mensaje recibido: " + s);
             }
 
             @Override
             public void onClose(int i, String s, boolean b) {
                 // Connection closed
-                System.out.println("OnClose");
+                System.out.println("Conexion cerrada");
             }
 
             @Override
@@ -83,5 +84,8 @@ public class MainActivity extends AppCompatActivity {
             }
         };
         WebSocketClient.connect();
+    }
+    private void sendMessage(String message) {
+        WebSocketClient.send(message);
     }
 }
