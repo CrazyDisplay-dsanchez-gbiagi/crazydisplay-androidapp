@@ -13,6 +13,7 @@ import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.Toast;
 
 public class MainActivity extends AppCompatActivity {
     private WebSocketClient WebSocketClient;
@@ -36,6 +37,11 @@ public class MainActivity extends AppCompatActivity {
         botonEnviar.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                if (WebSocketClient == null) {
+                    Log.println(Log.INFO, "Error", "No hay conexión");
+                    Toast.makeText(MainActivity.this, "No estás conectado", Toast.LENGTH_SHORT).show();
+                    return;
+                }
                 String msg = mensaje.getText().toString();
                 sendMessage(msg);
                 Log.println(Log.INFO, "Mensaje", msg);
@@ -44,9 +50,26 @@ public class MainActivity extends AppCompatActivity {
         botonConectar.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                ip = server_ip.getText().toString();
-                connectWebSocket(ip);
-                Log.println(Log.INFO, "IP", ip);
+                if (botonConectar.getText().equals("Conectar")){
+                    ip = server_ip.getText().toString();
+                    connectWebSocket(ip);
+                    // Esperar 2 segundos para simular conexion
+                    try {
+                        Thread.sleep(2000);
+                    } catch (InterruptedException e) {
+                        e.printStackTrace();
+                    }
+                    Log.println(Log.INFO, "IP", ip);
+                    if (WebSocketClient != null) {
+                        Toast.makeText(MainActivity.this, "Conectado", Toast.LENGTH_SHORT).show();
+                        botonConectar.setText("Desconectar");
+                    }
+                } else {
+                    WebSocketClient.close();
+                    WebSocketClient = null;
+                    Toast.makeText(MainActivity.this, "Desconectado", Toast.LENGTH_SHORT).show();
+                    botonConectar.setText("Conectar");
+                }
             }
         });
     }
