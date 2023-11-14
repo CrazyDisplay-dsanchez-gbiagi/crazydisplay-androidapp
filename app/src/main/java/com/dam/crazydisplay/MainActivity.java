@@ -109,6 +109,6 @@ public class MainActivity extends AppCompatActivity {
         WebSocketClient.connect();
     }
     private void sendMessage(String message) {
-        WebSocketClient.send(message);
+            WebSocketClient.send(message);
     }
 }
