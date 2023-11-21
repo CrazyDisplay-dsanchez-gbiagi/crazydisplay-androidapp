@@ -6,7 +6,6 @@ import java.io.BufferedReader;
 import java.io.BufferedWriter;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
-import java.io.FileWriter;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.OutputStreamWriter;
@@ -57,9 +56,21 @@ public class MainActivity extends AppCompatActivity {
         botonLista.setBackgroundColor(Color.GRAY);
 
         // Check if there are a connection already up
+        if (!appData.getConnected()) {
+            botonEnviar.setVisibility(View.INVISIBLE);
+            msgTitle.setVisibility(View.INVISIBLE);
+            mensaje.setVisibility(View.INVISIBLE);
+        }
+
+        // Check if there are a login already up
         if (appData.getLogged()){
             botonConectar.setText("Desconectar");
+            ipTitle.setText("Mensaje");
+            server_ip.setHint("Introduce tu mensaje");
             botonLista.setBackgroundColor(Color.MAGENTA);
+            botonEnviar.setVisibility(View.INVISIBLE);
+            msgTitle.setVisibility(View.INVISIBLE);
+            mensaje.setVisibility(View.INVISIBLE);
         } else {
             readMessageList(this, messageListArray);
         }
@@ -95,14 +106,16 @@ public class MainActivity extends AppCompatActivity {
                             appData.getClientMessageControler().sendMessage(objResponse.toString());
                             Thread.sleep(2000);
                             if (appData.getLogged()) {
-                                ipTitle.setText("IP");
-                                msgTitle.setText("Mensaje");
-                                server_ip.setHint("Introduce la IP");
-                                mensaje.setHint("Introduce tu mensaje");
+                                mensaje.setText("");
+                                msgTitle.setVisibility(View.INVISIBLE);
+                                mensaje.setVisibility(View.INVISIBLE);
+                                botonConectar.setVisibility(View.VISIBLE);
+                                mensaje.setInputType((1));
+                                ipTitle.setText("Mensaje");
+                                server_ip.setHint("Introduce tu mensaje");
                                 botonEnviar.setText("Enviar");
                                 botonLista.setBackgroundColor(Color.MAGENTA);
                                 server_ip.setText("");
-                                mensaje.setText("");
                                 Toast.makeText(MainActivity.this, "Sesion iniciada", Toast.LENGTH_SHORT).show();
                             } else {
                                 Toast.makeText(MainActivity.this, "Usuario o contraseña erroneo", Toast.LENGTH_SHORT).show();
@@ -111,7 +124,7 @@ public class MainActivity extends AppCompatActivity {
                             throw new RuntimeException(e);
                         }
                     } else {
-                        String msg = mensaje.getText().toString();
+                        String msg = server_ip.getText().toString();
                         boolean saveMsg = true;
                         for (int i = 0 ; i < messageListArray.size() ; i++) {
                             if (msg.equals(messageListArray.get(i))) saveMsg = false;
@@ -132,7 +145,7 @@ public class MainActivity extends AppCompatActivity {
                         clientMessageControler.sendMessage(objResponse.toString());
                         Log.println(Log.INFO, "Mensaje", msg);
                         Toast.makeText(MainActivity.this, "Mensaje enviado", Toast.LENGTH_SHORT).show();
-                        mensaje.setText("");
+                        server_ip.setText("");
                         //serializeArrayList(MainActivity.this, messageListArray);
                     }
                 }
@@ -155,14 +168,19 @@ public class MainActivity extends AppCompatActivity {
                     }
                     Log.println(Log.INFO, "IP", ip);
                     if (appData.getConnected()) {
+                        botonEnviar.setVisibility(View.VISIBLE);
+                        msgTitle.setVisibility(View.VISIBLE);
+                        mensaje.setVisibility(View.VISIBLE);
                         Toast.makeText(MainActivity.this, "Esperando usuario y contraseña", Toast.LENGTH_SHORT).show();
                         botonConectar.setText("Desconectar");
                         server_ip.setText("");
                         server_ip.setHint("Introduce el usuario");
                         mensaje.setHint("Introduce la contraseña");
+                        mensaje.setInputType((129));
                         botonEnviar.setText("Login");
                         ipTitle.setText("Usuario");
                         msgTitle.setText("Contraseña");
+                        botonConectar.setVisibility(View.INVISIBLE);
                     } else {
                         Toast.makeText(MainActivity.this, "La ip no es correcta", Toast.LENGTH_SHORT).show();
                     }
@@ -174,6 +192,11 @@ public class MainActivity extends AppCompatActivity {
                     Toast.makeText(MainActivity.this, "Desconectado", Toast.LENGTH_SHORT).show();
                     botonConectar.setText("Conectar");
                     botonLista.setBackgroundColor(Color.GRAY);
+                    botonEnviar.setVisibility(View.INVISIBLE);
+                    msgTitle.setVisibility(View.INVISIBLE);
+                    mensaje.setVisibility(View.INVISIBLE);
+                    ipTitle.setText("IP");
+                    server_ip.setHint("Introduce la IP");
                 }
             }
         });

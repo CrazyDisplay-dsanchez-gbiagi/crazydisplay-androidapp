@@ -8,7 +8,6 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.net.URI;
-import java.util.ArrayList;
 
 public class ClientMessageControler extends WebSocketClient {
     AppData appData;
