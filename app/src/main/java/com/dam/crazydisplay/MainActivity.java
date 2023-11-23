@@ -30,7 +30,7 @@ import android.widget.Toast;
 public class MainActivity extends AppCompatActivity {
     AppData appData; // This is a singleton to save data between views
     ClientMessageControler clientMessageControler;
-    ArrayList<String> messageListArray;
+    ArrayList<MessageData> messageListArray;
     private String ip;
 
     public MainActivity() {
@@ -104,6 +104,7 @@ public class MainActivity extends AppCompatActivity {
                             objResponse.put("user", usr);
                             objResponse.put("password", psw);
                             appData.getClientMessageControler().sendMessage(objResponse.toString());
+                            Toast.makeText(MainActivity.this, "Esperando respuesta del servidor.", Toast.LENGTH_SHORT).show();
                             Thread.sleep(2000);
                             if (appData.getLogged()) {
                                 mensaje.setText("");
@@ -126,13 +127,20 @@ public class MainActivity extends AppCompatActivity {
                     } else {
                         String msg = server_ip.getText().toString();
                         boolean saveMsg = true;
-                        for (int i = 0 ; i < messageListArray.size() ; i++) {
-                            if (msg.equals(messageListArray.get(i))) saveMsg = false;
+                        int index = 0;
+                        for (MessageData listMsg : messageListArray) {
+                            index++;
+                            if (msg.equals(listMsg.getMessage())) {
+                                saveMsg = false;
+                                break;
+                            }
                         }
-                        if (saveMsg) {
-                            messageListArray.add(msg);
-                            saveMessageList(MainActivity.this, messageListArray);
+                        if (!saveMsg) {
+                            messageListArray.remove(index);
                         }
+                        messageListArray.add(new MessageData(msg, appData.getCurrentDateTimeString()));
+                        saveMessageList(MainActivity.this, messageListArray);
+
                         JSONObject objResponse = null;
                         try {
                             objResponse = new JSONObject("{}");
@@ -162,16 +170,16 @@ public class MainActivity extends AppCompatActivity {
                     clientMessageControler.connect();
                     appData.setClientMessageControler(clientMessageControler);
                     try {
+                        Toast.makeText(MainActivity.this, "Esperando respuesta del servidor.", Toast.LENGTH_SHORT).show();
                         Thread.sleep(2000);
                     } catch (InterruptedException e) {
                         e.printStackTrace();
                     }
-                    Log.println(Log.INFO, "IP", ip);
                     if (appData.getConnected()) {
                         botonEnviar.setVisibility(View.VISIBLE);
                         msgTitle.setVisibility(View.VISIBLE);
                         mensaje.setVisibility(View.VISIBLE);
-                        Toast.makeText(MainActivity.this, "Esperando usuario y contraseña", Toast.LENGTH_SHORT).show();
+                        Toast.makeText(MainActivity.this, "Conectado. Esperando usuario y contraseña", Toast.LENGTH_SHORT).show();
                         botonConectar.setText("Desconectar");
                         server_ip.setText("");
                         server_ip.setHint("Introduce el usuario");
@@ -214,7 +222,7 @@ public class MainActivity extends AppCompatActivity {
         return new ClientMessageControler(uri);
     }
 
-    public void saveMessageList(Context context, ArrayList<String> messageListArray) {
+    public void saveMessageList(Context context, ArrayList<MessageData> messageListArray) {
         try {
             FileOutputStream fileOutputStream = context.openFileOutput("msglist.txt", Context.MODE_PRIVATE);
 
@@ -222,8 +230,10 @@ public class MainActivity extends AppCompatActivity {
 
             BufferedWriter bufferedWriter = new BufferedWriter(outputStreamWriter);
 
-            for (String msg : messageListArray) {
-                bufferedWriter.write(msg);
+            for (MessageData msg : messageListArray) {
+                bufferedWriter.write(msg.getMessage());
+                bufferedWriter.newLine();
+                bufferedWriter.write(msg.getDate());
                 bufferedWriter.newLine();
             }
 
@@ -235,7 +245,7 @@ public class MainActivity extends AppCompatActivity {
         }
     }
 
-    public void readMessageList(Context context, ArrayList<String> messageListArray) {
+    public void readMessageList(Context context, ArrayList<MessageData> messageListArray) {
 
         try {
             FileInputStream fileInputStream = context.openFileInput("msglist.txt");
@@ -244,9 +254,20 @@ public class MainActivity extends AppCompatActivity {
 
             BufferedReader bufferedReader = new BufferedReader(inputStreamReader);
 
+            String message = "";
+            String date = "";
+
             String line;
             while ((line = bufferedReader.readLine()) != null) {
-                messageListArray.add(line);
+                for (int i = 0 ; i < 2 ; i++) {
+                    if (i == 0) {
+                        message = line;
+                        line = bufferedReader.readLine();
+                    } else {
+                        date = line;
+                    }
+                }
+                messageListArray.add(new MessageData(message, date));
             }
 
             bufferedReader.close();

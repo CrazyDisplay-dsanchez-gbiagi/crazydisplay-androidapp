@@ -1,11 +1,14 @@
 package com.dam.crazydisplay;
 
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Date;
+import java.util.Locale;
 
 public class AppData {
     private static final AppData instance = new AppData();
     private ClientMessageControler clientMessageControler;
-    private ArrayList<String> messageListArray;
+    private ArrayList<MessageData> messageListArray;
     private boolean connected;
     private boolean logged;
 
@@ -40,7 +43,18 @@ public class AppData {
         this.clientMessageControler = clientMessageControler;
     }
 
-    public ArrayList<String> getMessageListArray() {
+    public ArrayList<MessageData> getMessageListArray() {
         return messageListArray;
+    }
+
+    public String getCurrentDateTimeString() {
+        // Obtener la fecha y hora actual
+        Date currentDate = new Date();
+
+        // Definir el formato deseado (en este caso, "yyyy-MM-dd HH:mm:ss")
+        SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss", Locale.getDefault());
+
+        // Formatear la fecha y hora actual como una cadena
+        return dateFormat.format(currentDate);
     }
 }

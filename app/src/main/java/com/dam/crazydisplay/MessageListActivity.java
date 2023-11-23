@@ -2,6 +2,8 @@ package com.dam.crazydisplay;
 
 import androidx.appcompat.app.AppCompatActivity;
 
+import android.app.AlertDialog;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
@@ -28,7 +30,7 @@ class Record {
 public class MessageListActivity extends AppCompatActivity {
     AppData appData;
     ClientMessageControler clientMessageControler;
-    ArrayList<String> messageListArray;
+    ArrayList<MessageData> messageListArray;
     public MessageListActivity(){
         appData = AppData.getInstance(); // This is a singleton to save data between views
         clientMessageControler = appData.getClientMessageControler();
@@ -54,8 +56,8 @@ public class MessageListActivity extends AppCompatActivity {
         });
 
         // Put all the messages in the Record
-        for (int i = 0 ; i < messageListArray.size() ; i++) {
-            records.add(new Record(messageListArray.get(i)));
+        for (MessageData msg : messageListArray) {
+            records.add(new Record(msg.getMessage()));
         }
 
         adapter = new ArrayAdapter<Record>(this, R.layout.list_item, records ) {
@@ -69,18 +71,34 @@ public class MessageListActivity extends AppCompatActivity {
                 ((Button) convertView.findViewById(R.id.buttonSendMessage)).setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View view) {
-                        String msg = getItem(pos).textMessage;
-                        JSONObject objResponse = null;
-                        try {
-                            objResponse = new JSONObject("{}");
-                            objResponse.put("type", "message");
-                            objResponse.put("format", "img");
-                            objResponse.put("value", msg);
-                        } catch (JSONException e) {
-                            throw new RuntimeException(e);
-                        }
-                        clientMessageControler.sendMessage(objResponse.toString());
-                        Log.println(Log.INFO, "Mensaje", msg);
+                        AlertDialog.Builder builder = new AlertDialog.Builder(MessageListActivity.this);
+                        builder.setTitle("Confirmación")
+                                .setMessage("¿Estás seguro de realizar esta acción?")
+                                .setPositiveButton("Sí", new DialogInterface.OnClickListener() {
+                                    @Override
+                                    public void onClick(DialogInterface dialog, int which) {
+                                        String msg = getItem(pos).textMessage;
+                                        JSONObject objResponse = null;
+                                        try {
+                                            objResponse = new JSONObject("{}");
+                                            objResponse.put("type", "message");
+                                            objResponse.put("format", "img");
+                                            objResponse.put("value", msg);
+                                        } catch (JSONException e) {
+                                            throw new RuntimeException(e);
+                                        }
+                                        clientMessageControler.sendMessage(objResponse.toString());
+                                        Log.println(Log.INFO, "Mensaje", msg);
+                                        dialog.dismiss();
+                                    }
+                                })
+                                .setNegativeButton("No", new DialogInterface.OnClickListener() {
+                                    @Override
+                                    public void onClick(DialogInterface dialog, int which) {
+                                        dialog.dismiss();
+                                    }
+                                })
+                                .show();
                     }
                 });
 
