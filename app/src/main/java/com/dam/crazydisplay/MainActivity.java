@@ -53,6 +53,7 @@ public class MainActivity extends AppCompatActivity {
         Button botonEnviar = findViewById(R.id.buttonEnviar);
         Button botonConectar = findViewById(R.id.buttonConectar);
         Button botonLista = findViewById(R.id.listViewButton);
+        Button botonImagen = findViewById(R.id.imageViewButton);
         botonLista.setBackgroundColor(Color.GRAY);
 
         // Check if there are a connection already up
@@ -68,7 +69,6 @@ public class MainActivity extends AppCompatActivity {
             ipTitle.setText("Mensaje");
             server_ip.setHint("Introduce tu mensaje");
             botonLista.setBackgroundColor(Color.MAGENTA);
-            botonEnviar.setVisibility(View.INVISIBLE);
             msgTitle.setVisibility(View.INVISIBLE);
             mensaje.setVisibility(View.INVISIBLE);
         } else {
@@ -81,6 +81,15 @@ public class MainActivity extends AppCompatActivity {
             public void onClick(View view) {
                 if (appData.getLogged()) {
                     Intent intent = new Intent(MainActivity.this, MessageListActivity.class);
+                    startActivity(intent);
+                }
+            }
+        });
+        botonImagen.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                if (appData.getLogged()) {
+                    Intent intent = new Intent(MainActivity.this, ImagesSendActivity.class);
                     startActivity(intent);
                 }
             }
@@ -145,7 +154,7 @@ public class MainActivity extends AppCompatActivity {
                         try {
                             objResponse = new JSONObject("{}");
                             objResponse.put("type", "message");
-                            objResponse.put("format", "img");
+                            objResponse.put("format", "text");
                             objResponse.put("value", msg);
                         } catch (JSONException e) {
                             throw new RuntimeException(e);

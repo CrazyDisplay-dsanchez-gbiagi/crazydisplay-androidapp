@@ -16,6 +16,9 @@
         android:theme="@style/Theme.Crazydisplay_androidapp"
         tools:targetApi="31">
         <activity
+            android:name=".ImagesSendActivity"
+            android:exported="false" />
+        <activity
             android:name=".MessageListActivity"
             android:exported="false" />
         <activity

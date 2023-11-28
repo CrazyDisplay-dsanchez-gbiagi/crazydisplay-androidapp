@@ -82,13 +82,12 @@ public class MessageListActivity extends AppCompatActivity {
                                         try {
                                             objResponse = new JSONObject("{}");
                                             objResponse.put("type", "message");
-                                            objResponse.put("format", "img");
+                                            objResponse.put("format", "text");
                                             objResponse.put("value", msg);
                                         } catch (JSONException e) {
                                             throw new RuntimeException(e);
                                         }
                                         clientMessageControler.sendMessage(objResponse.toString());
-                                        Log.println(Log.INFO, "Mensaje", msg);
                                         dialog.dismiss();
                                     }
                                 })
