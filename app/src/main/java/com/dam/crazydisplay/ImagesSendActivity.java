@@ -2,6 +2,7 @@ package com.dam.crazydisplay;
 
 import androidx.appcompat.app.AppCompatActivity;
 
+import android.content.Context;
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.drawable.BitmapDrawable;
@@ -15,7 +16,11 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import android.util.Base64;
+
+import java.io.BufferedWriter;
 import java.io.ByteArrayOutputStream;
+import java.io.FileOutputStream;
+import java.io.OutputStreamWriter;
 
 public class ImagesSendActivity extends AppCompatActivity {
 
@@ -35,6 +40,8 @@ public class ImagesSendActivity extends AppCompatActivity {
         ImageView img2 = findViewById(R.id.imageView2);
         ImageView img3 = findViewById(R.id.imageView3);
         ImageView img4 = findViewById(R.id.imageView4);
+        ImageView img5 = findViewById(R.id.imageView5);
+        ImageView img6 = findViewById(R.id.imageView6);
 
         buttonHome.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -102,7 +109,39 @@ public class ImagesSendActivity extends AppCompatActivity {
                     objResponse.put("format", "img");
                     objResponse.put("ext", "jpg");
                     objResponse.put("value", imgToBase64(img4));
+                } catch (Exception e) {
+                    throw new RuntimeException(e);
+                }
+                clientMessageControler.sendMessage(objResponse.toString());
+            }
+        });
+        img5.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                JSONObject objResponse = null;
+                try {
+                    objResponse = new JSONObject("{}");
+                    objResponse.put("type", "message");
+                    objResponse.put("format", "img");
+                    objResponse.put("ext", "jpg");
+                    objResponse.put("value", imgToBase64(img5));
                 } catch (JSONException e) {
+                    throw new RuntimeException(e);
+                }
+                clientMessageControler.sendMessage(objResponse.toString());
+            }
+        });
+        img6.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                JSONObject objResponse = null;
+                try {
+                    objResponse = new JSONObject("{}");
+                    objResponse.put("type", "message");
+                    objResponse.put("format", "img");
+                    objResponse.put("ext", "jpg");
+                    objResponse.put("value", imgToBase64(img6));
+                } catch (Exception e) {
                     throw new RuntimeException(e);
                 }
                 clientMessageControler.sendMessage(objResponse.toString());
@@ -121,6 +160,6 @@ public class ImagesSendActivity extends AppCompatActivity {
         bitmap.compress(Bitmap.CompressFormat.JPEG, 100, byteArrayOutputStream);
 
         byte[] byteArray = byteArrayOutputStream.toByteArray();
-        return Base64.encodeToString(byteArray, Base64.DEFAULT);
+        return Base64.encodeToString(byteArray, Base64.NO_WRAP);
     }
 }

@@ -58,6 +58,7 @@ public class MainActivity extends AppCompatActivity {
 
         // Check if there are a connection already up
         if (!appData.getConnected()) {
+            botonImagen.setVisibility(View.INVISIBLE);
             botonEnviar.setVisibility(View.INVISIBLE);
             msgTitle.setVisibility(View.INVISIBLE);
             mensaje.setVisibility(View.INVISIBLE);
@@ -69,6 +70,7 @@ public class MainActivity extends AppCompatActivity {
             ipTitle.setText("Mensaje");
             server_ip.setHint("Introduce tu mensaje");
             botonLista.setBackgroundColor(Color.MAGENTA);
+            botonImagen.setVisibility(View.VISIBLE);
             msgTitle.setVisibility(View.INVISIBLE);
             mensaje.setVisibility(View.INVISIBLE);
         } else {
@@ -117,6 +119,7 @@ public class MainActivity extends AppCompatActivity {
                             Thread.sleep(2000);
                             if (appData.getLogged()) {
                                 mensaje.setText("");
+                                botonImagen.setVisibility(View.VISIBLE);
                                 msgTitle.setVisibility(View.INVISIBLE);
                                 mensaje.setVisibility(View.INVISIBLE);
                                 botonConectar.setVisibility(View.VISIBLE);
@@ -200,15 +203,17 @@ public class MainActivity extends AppCompatActivity {
                         botonConectar.setVisibility(View.INVISIBLE);
                     } else {
                         Toast.makeText(MainActivity.this, "La ip no es correcta", Toast.LENGTH_SHORT).show();
+                        appData.setClientMessageControler(null);
                     }
                 } else {
-                    clientMessageControler.close();
-                    clientMessageControler = null;
+                    appData.getClientMessageControler().close();
+                    appData.setClientMessageControler(null);
                     appData.setConnected();
                     appData.setLogged();
                     Toast.makeText(MainActivity.this, "Desconectado", Toast.LENGTH_SHORT).show();
                     botonConectar.setText("Conectar");
                     botonLista.setBackgroundColor(Color.GRAY);
+                    botonImagen.setVisibility(View.INVISIBLE);
                     botonEnviar.setVisibility(View.INVISIBLE);
                     msgTitle.setVisibility(View.INVISIBLE);
                     mensaje.setVisibility(View.INVISIBLE);
